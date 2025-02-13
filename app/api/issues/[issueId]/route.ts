@@ -114,13 +114,13 @@ export async function PATCH(req: NextRequest, { params }: ParamsType) {
     },
   });
 
-  if (issue.assigneeId) {
-    const assignee = await clerkClient.users.getUser(issue.assigneeId);
-    const assigneeForClient = filterUserForClient(assignee);
-    return NextResponse.json({
-      issue: { ...issue, assignee: assigneeForClient },
-    });
-  }
+  // if (issue.assigneeId) {
+  //   const assignee = await clerkClient.users.getUser(issue.assigneeId);
+  //   const assigneeForClient = filterUserForClient(assignee);
+  //   return NextResponse.json({
+  //     issue: { ...issue, assignee: assigneeForClient },
+  //   });
+  // }
 
   // return NextResponse.json<PostIssueResponse>({ issue });
   return NextResponse.json({

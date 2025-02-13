@@ -82,22 +82,22 @@ export async function GET(req: NextRequest) {
     .filter(Boolean);
 
   // USE THIS IF RUNNING LOCALLY -----------------------
-  // const users = await prisma.defaultUser.findMany({
-  //   where: {
-  //     id: {
-  //       in: userIds,
-  //     },
-  //   },
-  // });
+  const users = await prisma.defaultUser.findMany({
+    where: {
+      id: {
+        in: userIds,
+      },
+    },
+  });
   // --------------------------------------------------
 
   // COMMENT THIS IF RUNNING LOCALLY ------------------
-  const users = (
-    await clerkClient.users.getUserList({
-      userId: userIds,
-      limit: 10,
-    })
-  ).map(filterUserForClient);
+  // const users = (
+  //   await clerkClient.users.getUserList({
+  //     userId: userIds,
+  //     limit: 10,
+  //   })
+  // ).map(filterUserForClient);
   // --------------------------------------------------
 
   const issuesForClient = generateIssuesForClient(
