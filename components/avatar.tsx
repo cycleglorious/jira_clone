@@ -15,7 +15,7 @@ const Avatar = ({ src, alt, size = 32, ...props }: AvatarProps) => {
           alt={alt}
           height={size}
           width={size}
-          className="h-fit w-fit rounded-full"
+          className="h-8 w-8 rounded-full"
           {...props}
         />
       ) : (

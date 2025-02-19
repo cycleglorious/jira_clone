@@ -8,6 +8,7 @@
 const config = {
   reactStrictMode: true,
   experimental: { appDir: true },
+  output: "standalone",
   generateBuildId: async () => {
     // This could be anything, using the latest git hash
     return "build-id"
