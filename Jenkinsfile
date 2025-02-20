@@ -1,23 +1,22 @@
 pipeline {
   agent {
-    docker {
-      image 'node:20'
-    }
-
+    label 'node'
   }
+
   stages {
     stage('Build') {
-      steps {
-        sh '''npm ci
-npm run build'''
+      timeout(time: 5, unit: 'MINUTES') {
+        steps {
+          sh './.jenkins/build-app.sh'
+        }
       }
     }
 
     stage('Get artifact') {
       steps {
         echo 'here scrip to get artifact'
+        sh 'ls'
       }
     }
-
   }
 }
