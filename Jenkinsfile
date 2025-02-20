@@ -5,11 +5,9 @@ pipeline {
 
   stages {
     stage('Build') {
-      timeout(time: 5, unit: 'MINUTES') {
         steps {
           sh './.jenkins/build-app.sh'
         }
-      }
     }
 
     stage('Get artifact') {
