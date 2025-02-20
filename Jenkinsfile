@@ -7,7 +7,7 @@ pipeline {
     stage('Build') {
         steps {
           sh '''
-            ./.jenkins/build-app.sh
+            ./.jenkins/scripts/build-app.sh
           '''
         }
     }
@@ -15,7 +15,7 @@ pipeline {
     stage('Get artifact') {
       steps {
         sh '''
-          ./.jenkins/get-artifact.sh
+          ./.jenkins/scripts/get-artifact.sh
         '''
       }
     }
