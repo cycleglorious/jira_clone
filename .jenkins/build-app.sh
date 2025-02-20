@@ -14,6 +14,7 @@ npm ci
 
 # Create .env file for configs
 echo "Creating .env file for configs"
+echo "NODE_ENV='production'" >> .env
 echo "DATABASE_URL='postgresql://postgres:password@localhost:5432'" >> .env
 echo "UPSTASH_REDIS_REST_URL='http://localhost'" >> .env
 echo "UPSTASH_REDIS_REST_TOKEN='token'" >> .env
