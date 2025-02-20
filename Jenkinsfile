@@ -23,9 +23,9 @@ pipeline {
 
   post {
     success {
-      archiveArtifacts artifacts: 'build.zip', fingerprint: true
+      archiveArtifacts artifacts: '*.zip', fingerprint: true
     }
-    always {
+    cleanup {
       cleanWs()
     }
   }
