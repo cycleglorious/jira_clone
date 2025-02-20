@@ -20,4 +20,13 @@ pipeline {
       }
     }
   }
+
+  post {
+    success {
+      archiveArtifacts artifacts: 'build.zip', fingerprint: true
+    }
+    always {
+      cleanWs()
+    }
+  }
 }
