@@ -2,7 +2,7 @@
 
 # Start the database
 echo "Starting postgresql"
-docker run -d --rm \
+sudo docker run -d --rm \
 	--name postgres-db \
 	-e POSTGRES_PASSWORD=password \
   -p 5432:5432 \
@@ -28,4 +28,4 @@ npm run build
 
 # Stop the database
 echo "Stopping the database"
-docker stop postgres-db
+sudo docker stop postgres-db

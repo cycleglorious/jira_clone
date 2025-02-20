@@ -7,8 +7,7 @@ pipeline {
     stage('Build') {
         steps {
           sh '''
-            whoami
-            sudo docker ps
+            ./.jenkins/build-app.sh
           '''
         }
     }
