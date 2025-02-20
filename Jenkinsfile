@@ -14,8 +14,9 @@ pipeline {
 
     stage('Get artifact') {
       steps {
-        echo 'here scrip to get artifact'
-        sh 'ls'
+        sh '''
+          ./.jenkins/get-artifact.sh
+        '''
       }
     }
   }
