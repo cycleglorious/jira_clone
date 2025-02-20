@@ -8,7 +8,6 @@ pipeline {
         steps {
           sh '''
             whoami
-            docker ps
             sudo docker ps
           '''
         }
