@@ -2,10 +2,6 @@ pipeline {
     agent {
         label 'node'
     }
-
-    options {
-        timeout(time: 5, unit: 'MINUTES')
-    }
     stages {
         stage('Install dependencies') {
             steps {
