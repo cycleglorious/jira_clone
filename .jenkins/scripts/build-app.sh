@@ -12,4 +12,5 @@ rm build/.env
 
 # Zip the artifact
 echo "Zipping artifact"
-zip -r build.zip build
+cd build
+zip -r ../build.zip .
