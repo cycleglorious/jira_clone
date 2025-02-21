@@ -12,7 +12,6 @@ pipeline {
                 sh '''
                 ./.jenkins/scripts/install-dependencies.sh
                 '''
-                junit 'tests_report.xml'
             }
         }
 
@@ -20,7 +19,8 @@ pipeline {
             steps {
                 sh '''
                 ./.jenkins/scripts/test-app.sh
-            '''
+                '''
+                junit 'tests_report.xml'
             }
         }
 
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 sh '''
                 ./.jenkins/scripts/build-app.sh
-            '''
+                '''
             }
         }
     }
@@ -41,7 +41,7 @@ pipeline {
             cleanWs()
             sh '''
             sudo docker stop $(sudo docker ps -a -q)
-        '''
+            '''
         }
     }
 }
