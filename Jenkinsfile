@@ -11,6 +11,15 @@ pipeline {
             steps {
                 sh '''
                 ./.jenkins/scripts/install-dependencies.sh
+                '''
+                junit 'tests_report.xml'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                ./.jenkins/scripts/test-app.sh
             '''
             }
         }
