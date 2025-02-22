@@ -9,6 +9,7 @@ const ProjectLayout = ({ children }: { children: React.ReactNode }) => {
     <Fragment>
       <TopNavbar />
       <main className="flex h-[calc(100vh_-_3rem)] w-full">
+        <p>sidebar</p>
         <Sidebar />
         <FiltersProvider>
           <div className="w-full max-w-[calc(100vw_-_16rem)]">{children}</div>
