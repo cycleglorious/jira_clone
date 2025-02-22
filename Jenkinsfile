@@ -26,6 +26,9 @@ pipeline {
                 ./.jenkins/scripts/build-app.sh
                 '''
             }
+            when {
+                branch 'main'
+            }
         }
     }
 
