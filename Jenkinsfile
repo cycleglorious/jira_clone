@@ -25,6 +25,7 @@ pipeline {
                 sh '''
                 ./.jenkins/scripts/build-app.sh
                 '''
+                archiveArtifacts artifacts: '*.zip', fingerprint: true
             }
             when {
                 branch 'main'
@@ -33,9 +34,6 @@ pipeline {
     }
 
     post {
-        success {
-            archiveArtifacts artifacts: '*.zip', fingerprint: true
-        }
         cleanup {
             cleanWs()
             sh '''
