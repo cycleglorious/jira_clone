@@ -27,9 +27,33 @@ pipeline {
                 '''
                 archiveArtifacts artifacts: '*.zip', fingerprint: true
             }
-            when {
-                branch 'main'
+            // when {
+            //     branch 'main'
+            // }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshPublisher(
+                    publishers: [sshPublisherDesc(configName: 'Ansible control machine',
+                    transfers: [sshTransfer(
+                        cleanRemote: false,
+                        excludes: '',
+                        execCommand: '',
+                        execTimeout: 120000,
+                        flatten: false,
+                        makeEmptyDirs: false,
+                        noDefaultExcludes: false,
+                        patternSeparator: '[, ]+',
+                        remoteDirectory: '/home/vagrant/ansible/roles/app_setup/files',
+                        remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'build/*.zip'
+                    )],
+                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
+                )
             }
+            // when {
+            //     branch 'main'
+            // }
         }
     }
 
