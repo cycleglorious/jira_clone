@@ -2,6 +2,11 @@ pipeline {
     agent {
         label 'node'
     }
+    environment {
+        SSHKEY = credentials('vagrant')
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
+        ANSIBLE_SCP_IF_SSH = 'True'
+    }
     stages {
         stage('Install dependencies') {
             steps {
@@ -27,33 +32,44 @@ pipeline {
                 '''
                 archiveArtifacts artifacts: '*.zip', fingerprint: true
             }
-            // when {
-            //     branch 'main'
-            // }
+            when {
+                branch 'main'
+            }
         }
 
         stage('Deploy') {
             steps {
                 sshPublisher(
-                    publishers: [sshPublisherDesc(configName: 'Ansible control machine',
-                    transfers: [sshTransfer(
-                        cleanRemote: false,
-                        excludes: '',
-                        execCommand: '',
-                        execTimeout: 120000,
-                        flatten: false,
-                        makeEmptyDirs: false,
-                        noDefaultExcludes: false,
-                        patternSeparator: '[, ]+',
-                        remoteDirectory: '/home/vagrant/ansible/roles/app_setup/files',
-                        remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'build/*.zip'
-                    )],
-                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'Ansible control machine',
+                            transfers: [
+                                sshTransfer(
+                                    cleanRemote: false,
+                                    excludes: '',
+                                    execCommand: 'ansible-playbook main.yml --tags app',
+                                    execTimeout: 120000,
+                                    flatten: false,
+                                    makeEmptyDirs: false,
+                                    noDefaultExcludes: false,
+                                    patternSeparator: '[, ]+',
+                                    remoteDirectory: 'roles/app_setup/files/',
+                                    remoteDirectorySDF: false,
+                                    removePrefix: '',
+                                    sourceFiles: '*.zip'
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            useWorkspaceInPromotion: false,
+                            verbose: false
+                        )
+                    ]
                 )
+
             }
-            // when {
-            //     branch 'main'
-            // }
+            when {
+                branch 'main'
+            }
         }
     }
 
