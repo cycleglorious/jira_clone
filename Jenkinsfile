@@ -3,7 +3,7 @@ pipeline {
         label 'node'
     }
     environment {
-        ZIP_NAME =  ZIP_NAME = "build-${env.BUILD_ID}.zip"
+        ZIP_NAME = "build-${env.BUILD_ID}.zip"
     }
     stages {
         stage('Install dependencies') {
