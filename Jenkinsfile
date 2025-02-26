@@ -43,7 +43,7 @@ pipeline {
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
-                                    execCommand: "ansible-playbook main.yml --tags app -e artifact_name=${ZIP_NAME}",
+                                    execCommand: "cd /home/vagrant/ansible && ansible-playbook main.yml --tags app -e artifact_name=${ZIP_NAME}",
                                     execTimeout: 120000,
                                     flatten: false,
                                     makeEmptyDirs: false,
@@ -56,7 +56,7 @@ pipeline {
                             ],
                             usePromotionTimestamp: false,
                             useWorkspaceInPromotion: false,
-                            verbose: false
+                            verbose: true
                         )
                     ]
                 )

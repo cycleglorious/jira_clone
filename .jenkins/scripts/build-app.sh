@@ -5,6 +5,7 @@ ZIP_NAME=$1
 
 # Build the app
 echo "Building the app"
+npm install sharp
 npm run build
 
 # Collect the artifact
