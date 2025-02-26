@@ -2,11 +2,6 @@ pipeline {
     agent {
         label 'node'
     }
-    environment {
-        SSHKEY = credentials('vagrant')
-        ANSIBLE_HOST_KEY_CHECKING = 'False'
-        ANSIBLE_SCP_IF_SSH = 'True'
-    }
     stages {
         stage('Install dependencies') {
             steps {
