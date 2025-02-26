@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# Get build id
+BUILD_ID=$1
+
 # Start the database
 echo "Starting postgresql"
 sudo docker run -d --rm \
-	--name postgres-db \
+  --label jenkins_build_id=${BUILD_ID} \
 	-e POSTGRES_PASSWORD=password \
   -p 5432:5432 \
   postgres
