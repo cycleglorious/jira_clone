@@ -38,7 +38,7 @@ pipeline {
                 sshPublisher(
                     publishers: [
                         sshPublisherDesc(
-                            configName: 'Ansible control machine',
+                            configName: 'ansible-control-machine',
                             transfers: [
                                 sshTransfer(
                                     cleanRemote: false,
