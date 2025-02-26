@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Define the zip file name variable
+ZIP_NAME="build-$(date +%Y%m%d%H%M%S).zip"
+
 # Build the app
 echo "Building the app"
 npm run build
@@ -10,7 +13,10 @@ cp -r .next/standalone/ build
 cp -r .next/static build/.next/
 rm build/.env
 
-# Zip the artifact
+# Zip the artifact with the variable zip name
 echo "Zipping artifact"
 cd build
-zip -r ../build.zip .
+zip -r "../$ZIP_NAME" .
+
+# Return the zip file name
+echo $ZIP_NAME

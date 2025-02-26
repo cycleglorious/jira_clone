@@ -2,6 +2,9 @@ pipeline {
     agent {
         label 'node'
     }
+    environment {
+        ZIP_NAME = ''
+    }
     stages {
         stage('Install dependencies') {
             steps {
@@ -22,14 +25,15 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh '''
-                ./.jenkins/scripts/build-app.sh
-                '''
-                archiveArtifacts artifacts: '*.zip', fingerprint: true
+                script {
+                    ZIP_NAME = sh(script: '.jenkins/scripts/build-app.sh', returnStdout: true).trim()
+                    echo "Zip file name: ${ZIP_NAME}"
+                }
+                archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
-            when {
-                branch 'main'
-            }
+            // when {
+            //     branch 'main'
+            // }
         }
 
         stage('Deploy') {
@@ -42,7 +46,7 @@ pipeline {
                                 sshTransfer(
                                     cleanRemote: false,
                                     excludes: '',
-                                    execCommand: 'ansible-playbook main.yml --tags app',
+                                    execCommand: "ansible-playbook main.yml --tags app -e artifact_name=${ZIP_NAME}",
                                     execTimeout: 120000,
                                     flatten: false,
                                     makeEmptyDirs: false,
@@ -51,8 +55,7 @@ pipeline {
                                     remoteDirectory: 'roles/app_setup/files/',
                                     remoteDirectorySDF: false,
                                     removePrefix: '',
-                                    sourceFiles: '*.zip'
-                                )
+                                    sourceFiles: "${ZIP_NAME}")
                             ],
                             usePromotionTimestamp: false,
                             useWorkspaceInPromotion: false,
@@ -60,11 +63,10 @@ pipeline {
                         )
                     ]
                 )
-
             }
-            when {
-                branch 'main'
-            }
+            // when {
+            //     branch 'main'
+            // }
         }
     }
 
