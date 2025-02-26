@@ -22,3 +22,7 @@ echo "UPSTASH_REDIS_REST_TOKEN='token'" >> .env
 # Migrate the database
 echo "Migrating the database"
 npx prisma db push
+
+# Seed the database
+echo "Seeding the database"
+npx prisma db seed
