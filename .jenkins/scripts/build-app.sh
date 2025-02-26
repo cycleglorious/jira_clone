@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Define the zip file name variable
-ZIP_NAME="build-$(date +%Y%m%d%H%M%S).zip"
+# Get the zip file name
+ZIP_NAME=$1
 
 # Build the app
 echo "Building the app"
@@ -18,5 +18,3 @@ echo "Zipping artifact"
 cd build
 zip -r "../$ZIP_NAME" .
 
-# Return the zip file name
-echo $ZIP_NAME

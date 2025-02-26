@@ -3,7 +3,7 @@ pipeline {
         label 'node'
     }
     environment {
-        ZIP_NAME = ''
+        ZIP_NAME =  ZIP_NAME = "build-${env.BUILD_ID}.zip"
     }
     stages {
         stage('Install dependencies') {
@@ -25,10 +25,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    ZIP_NAME = sh(script: '.jenkins/scripts/build-app.sh', returnStdout: true).trim()
-                    echo "Zip file name: ${ZIP_NAME}"
-                }
+                sh "./.jenkins/scripts/build-app.sh ${ZIP_NAME}"
                 archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
             // when {
