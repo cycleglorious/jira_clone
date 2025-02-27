@@ -25,6 +25,7 @@ pipeline {
                 stage('Unit Tests') {
                     steps {
                         sh "./.jenkins/scripts/run-tests.sh ${TEST_REPORT}"
+                        junit "${TEST_REPORT}"
                     }
                 }
             }
