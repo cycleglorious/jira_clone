@@ -15,15 +15,17 @@ pipeline {
                 sh "./.jenkins/scripts/install-dependencies.sh ${env.BUILD_ID}"
             }
         }
-        parallel {
-            stage('Lint') {
-                steps {
-                    sh './.jenkins/scripts/run-lint.sh'
+        stage('Lint and Test') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                        sh './.jenkins/scripts/run-lint.sh'
+                    }
                 }
-            }
-            stage('Unit Tests') {
-                steps {
-                    sh "./.jenkins/scripts/run-tests.sh ${TEST_REPORT}"
+                stage('Unit Tests') {
+                    steps {
+                        sh "./.jenkins/scripts/run-tests.sh ${TEST_REPORT}"
+                    }
                 }
             }
         }
