@@ -4,6 +4,10 @@ pipeline {
     }
     environment {
         ZIP_NAME = "build-${env.BUILD_ID}.zip"
+        TEST_REPORT = 'tests_report.xml'
+    }
+    tools {
+        nodejs 'Node 22'
     }
     stages {
         stage('Install dependencies') {
@@ -14,10 +18,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh '''
-                ./.jenkins/scripts/run-tests.sh
-                '''
-                junit 'tests_report.xml'
+                sh "./.jenkins/scripts/run-tests.sh ${TEST_REPORT}"
+                junit "${TEST_REPORT}"
             }
         }
 
