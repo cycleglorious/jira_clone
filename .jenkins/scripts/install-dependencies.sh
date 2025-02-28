@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# Get build id
+BUILD_ID=$1
+
 # Start the database
 echo "Starting postgresql"
-sudo docker run -d --rm \
-	--name postgres-db \
+docker run -d --rm \
+  --name postgres-$BUILD_ID \
 	-e POSTGRES_PASSWORD=password \
   -p 5432:5432 \
   postgres
@@ -22,3 +25,7 @@ echo "UPSTASH_REDIS_REST_TOKEN='token'" >> .env
 # Migrate the database
 echo "Migrating the database"
 npx prisma db push
+
+# Seed the database
+echo "Seeding the database"
+npx prisma db seed
