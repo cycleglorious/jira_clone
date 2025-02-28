@@ -81,9 +81,9 @@ pipeline {
     post {
         cleanup {
             cleanWs()
-            sh """
-               sudo docker ps -q --filter "label=jenkins_build_id=${BUILD_ID}" | xargs -r docker stop
-            """
+            sh '''
+            docker ps -q | xargs -r docker stop
+            '''
         }
     }
 }
