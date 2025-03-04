@@ -56,7 +56,7 @@ pipeline {
                 """
             }
             when {
-                tags 'v*'
+                tag 'v*'
             }
         }
 
