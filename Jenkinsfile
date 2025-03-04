@@ -3,9 +3,9 @@ pipeline {
         label 'node'
     }
     environment {
-        ZIP_NAME = "build-${env.BUILD_ID}.zip"
+        ZIP_NAME = "build-${env.TAG_NAME}.zip"
         TEST_REPORT = 'tests_report.xml'
-        GH_TOKEN = credentials('jira-clone-jenkins')
+        GH_TOKEN = credentials('github-fine-token-jira-clone')
     }
     tools {
         nodejs 'Node 22'
@@ -40,7 +40,10 @@ pipeline {
                 archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
             when {
-                branch 'main'
+                anyOf {
+                    tag 'v*'
+                    branch 'main'
+                }
             }
         }
 
@@ -49,10 +52,10 @@ pipeline {
                 echo 'Creating GitHub release'
                 sh """
                 gh release create \
-                    $tag \
+                    ${env.TAG_NAME} \
                     ${ZIP_NAME} \
-                    --repo ${env.GITHUB_REPO} \
-                    --notes-from-tag
+                    --repo ${env.GIT_URL} \
+                    --generate-notes
                 """
             }
             when {
