@@ -5,6 +5,7 @@ pipeline {
     environment {
         ZIP_NAME = "build-${env.BUILD_ID}.zip"
         TEST_REPORT = 'tests_report.xml'
+        GH_TOKEN = credentials('jira-clone-jenkins')
     }
     tools {
         nodejs 'Node 22'
@@ -19,12 +20,14 @@ pipeline {
             parallel {
                 stage('Lint') {
                     steps {
-                        sh './.jenkins/scripts/run-lint.sh'
+                        echo 'Linting the code'
+                        sh 'npm run lint'
                     }
                 }
                 stage('Unit Tests') {
                     steps {
-                        sh "./.jenkins/scripts/run-tests.sh ${TEST_REPORT}"
+                        echo 'Running the tests'
+                        sh "npx vitest run > ${TEST_REPORT_FILE}"
                         junit "${TEST_REPORT}"
                     }
                 }
@@ -38,6 +41,22 @@ pipeline {
             }
             when {
                 branch 'main'
+            }
+        }
+
+        stage('Create GitHub Release') {
+            steps {
+                echo 'Creating GitHub release'
+                sh """
+                gh release create \
+                    $tag \
+                    ${ZIP_NAME} \
+                    --repo ${env.GITHUB_REPO} \
+                    --notes-from-tag
+                """
+            }
+            when {
+                tags 'v*'
             }
         }
 
