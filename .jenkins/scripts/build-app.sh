@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Get the zip file name
+ZIP_NAME=$1
+
 # Build the app
 echo "Building the app"
+npm install sharp
 npm run build
 
 # Collect the artifact
@@ -10,7 +14,8 @@ cp -r .next/standalone/ build
 cp -r .next/static build/.next/
 rm build/.env
 
-# Zip the artifact
+# Zip the artifact with the variable zip name
 echo "Zipping artifact"
 cd build
-zip -r ../build.zip .
+zip -r "../$ZIP_NAME" .
+
