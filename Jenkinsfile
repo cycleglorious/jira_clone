@@ -27,7 +27,7 @@ pipeline {
                 stage('Unit Tests') {
                     steps {
                         echo 'Running the tests'
-                        sh "npx vitest run > ${TEST_REPORT_FILE}"
+                        sh "npx vitest run > ${TEST_REPORT}"
                         junit "${TEST_REPORT}"
                     }
                 }
