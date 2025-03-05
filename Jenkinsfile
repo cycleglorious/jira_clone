@@ -36,7 +36,22 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./.jenkins/scripts/build-app.sh ${ZIP_NAME}"
+                echo 'Building the app'
+                sh 'npm run build'
+
+                echo 'Collecting artifact'
+                sh '''
+                    cp -r .next/standalone/ build
+                    cp -r .next/static build/.next/
+                    rm build/.env
+                '''
+
+                echo 'Zipping artifact'
+                sh """
+                    cd build
+                    zip -r ../${ZIP_NAME} .
+                """
+
                 archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
             when {
