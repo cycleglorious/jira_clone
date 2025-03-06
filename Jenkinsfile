@@ -55,10 +55,7 @@ pipeline {
                 archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
             when {
-                anyOf {
-                    tag 'v*'
-                    branch 'main'
-                }
+                tag 'v*'
             }
         }
 
@@ -110,7 +107,7 @@ pipeline {
                 )
             }
             when {
-                branch 'main'
+                tag 'v*'
             }
         }
     }
