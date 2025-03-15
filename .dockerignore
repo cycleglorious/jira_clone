@@ -1,5 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-/.vagrant
+
 # dependencies
 /node_modules
 /.pnp
@@ -30,11 +30,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
-# do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
-.env
-.env*.local
-
 # vercel
 .vercel
 
@@ -44,3 +39,6 @@ yarn-error.log*
 # files to ignore
 /prisma/un-seed.ts
 config.load
+
+Dockerfile*
+docker-compose.yml

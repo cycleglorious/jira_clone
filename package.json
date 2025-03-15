@@ -45,6 +45,7 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.8.0",
     "react-split": "^2.0.14",
+    "sharp": "0.32.6",
     "superjson": "1.12.2",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
