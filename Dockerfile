@@ -1,5 +1,5 @@
 FROM node:22-alpine AS base
-LABEL org.opencontainers.image.source https://github.com/cycleglorious/jira-clone
+LABEL org.opencontainers.image.source https://github.com/cycleglorious/jira_clone
 
 FROM base AS deps
 
