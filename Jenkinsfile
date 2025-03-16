@@ -124,7 +124,6 @@ pipeline {
     post {
         cleanup {
             cleanWs()
-            sh 'docker system prune -af --volumes'
             sh 'docker logout'
         }
     }
