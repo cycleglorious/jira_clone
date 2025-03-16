@@ -5,7 +5,9 @@ pipeline {
     environment {
         ZIP_NAME = "build-${env.TAG_NAME}.zip"
         TEST_REPORT = 'tests_report.xml'
-        GH_TOKEN = credentials('github-fine-token-jira-clone')
+        DOCKER_IMAGE = 'ghcr.io/cycleglorious/jira-clone'
+        DOCKER_TAG = "${DOCKER_IMAGE}:0.0.0"
+        DOCKER_LATEST = "${DOCKER_IMAGE}:latest"
     }
     tools {
         nodejs 'Node 22'
@@ -13,62 +15,68 @@ pipeline {
     stages {
         stage('Install dependencies') {
             steps {
-                sh "./.jenkins/scripts/install-dependencies.sh ${env.BUILD_ID}"
-            }
-        }
-        stage('Lint and Test') {
-            parallel {
-                stage('Lint') {
-                    steps {
-                        echo 'Linting the code'
-                        sh 'npm run lint'
-                    }
-                }
-                stage('Unit Tests') {
-                    steps {
-                        echo 'Running the tests'
-                        sh "npx vitest run > ${TEST_REPORT}"
-                        junit "${TEST_REPORT}"
-                    }
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Building the app'
-                sh 'npm run build'
-
-                echo 'Collecting artifact'
-                sh '''
-                    cp -r .next/standalone/ build
-                    cp -r .next/static build/.next/
-                    rm build/.env
-                '''
-
-                echo 'Zipping artifact'
-                sh """
-                    cd build
-                    zip -r ../${ZIP_NAME} .
+                echo 'Installing dependencies'
+                sh 'npm ci'
+                echo 'Creating .env file for placeholder configs'
+                writeFile file: '.env', text: """
+                NODE_ENV='production'
+                DATABASE_URL='postgresql://postgres:password@localhost:5432'
+                UPSTASH_REDIS_REST_URL='http://localhost'
+                UPSTASH_REDIS_REST_TOKEN='token'
                 """
-
-                archiveArtifacts artifacts: "${ZIP_NAME}", fingerprint: true
             }
-            when {
-                tag 'v*'
+        }
+        stage('Lint') {
+            steps {
+                echo 'Linting the code'
+                sh 'npm run lint'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo 'Running the tests'
+                sh "npx vitest run > ${TEST_REPORT}"
+                junit "${TEST_REPORT}"
+            }
+        }
+
+        stage('Docker login') {
+            steps {
+                echo 'Logging in to Docker Hub'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'ghcr-token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh 'echo $PASSWORD | docker login ghcr.io -u $USERNAME --password-stdin'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                echo 'Building Docker image'
+                sh "docker build -t ${DOCKER_TAG} -t ${DOCKER_LATEST} ."
+
+                echo 'Pushing Docker image to Docker Hub'
+                sh "docker push ${DOCKER_TAG}"
+                sh "docker push ${DOCKER_LATEST}"
             }
         }
 
         stage('Create GitHub Release') {
             steps {
-                echo 'Creating GitHub release'
-                sh """
-                gh release create \
-                    ${env.TAG_NAME} \
-                    ${ZIP_NAME} \
-                    --repo ${env.GIT_URL} \
-                    --generate-notes
-                """
+                script {
+                    withCredentials([string(credentialsId: 'github-fine-token-jira-clone', variable: 'GH_TOKEN')]) {
+                        echo 'Creating GitHub release'
+                        sh """
+                            gh release create \
+                            ${env.TAG_NAME} \
+                            ${ZIP_NAME} \
+                            --repo ${env.GIT_URL} \
+                            --generate-notes
+                        """
+                    }
+                }
             }
             when {
                 tag 'v*'
@@ -108,6 +116,7 @@ pipeline {
             }
             when {
                 tag 'v*'
+                branch 'main'
             }
         }
     }
@@ -115,9 +124,8 @@ pipeline {
     post {
         cleanup {
             cleanWs()
-            sh '''
-            docker ps -q | xargs -r docker stop
-            '''
+            sh 'docker system prune -af --volumes'
+            sh 'docker logout'
         }
     }
 }
