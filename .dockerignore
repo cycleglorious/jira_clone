@@ -42,3 +42,7 @@ config.load
 
 Dockerfile*
 docker-compose.yml
+.k8s/
+.vagrant/
+.git/
+.vscode/

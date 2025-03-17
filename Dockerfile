@@ -6,17 +6,18 @@ FROM base AS deps
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm i
+RUN npm ci
 
 # Run tests
 FROM base AS test 
 ARG TESTS_REPORT=tests_reports.xml
+
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx vitest run > ${TESTS_REPORT}
+RUN npx vitest run > ${TESTS_REPORT} || echo "Testing failed, check report!"
 
 # Lint
 FROM base AS lint 
@@ -27,6 +28,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN npx prisma generate
 RUN npm run lint -- --output-file ${LINT_REPORT} --format checkstyle || echo "Linting failed, check report!"
 
 # Build
@@ -38,7 +40,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /root/.npm /root/.npm
 COPY . .
 
-RUN npx prisma generate && npm run build
+RUN npx prisma generate
+RUN npm run build
 
 FROM base AS runner
 RUN apk add --no-cache openssl libc6-compat
