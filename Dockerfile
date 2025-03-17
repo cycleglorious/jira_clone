@@ -9,35 +9,32 @@ COPY package*.json ./
 RUN npm ci
 
 # Run tests
-FROM base AS test 
+FROM deps AS test 
 ARG TESTS_REPORT=tests_reports.xml
 
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx vitest run > ${TESTS_REPORT} || echo "Testing failed, check report!"
 
 # Lint
-FROM base AS lint 
+FROM deps AS lint 
 ARG LINT_REPORT=lint-report.json
 
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx prisma generate
 RUN npm run lint -- --output-file ${LINT_REPORT} --format checkstyle || echo "Linting failed, check report!"
 
 # Build
-FROM base AS builder
+FROM deps AS builder
 RUN apk add --no-cache openssl
 
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /root/.npm /root/.npm
+
 COPY . .
 
 RUN npx prisma generate
