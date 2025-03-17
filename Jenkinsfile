@@ -9,8 +9,8 @@ pipeline {
         DOCKER_IMAGE = 'ghcr.io/cycleglorious/jira-clone'
         DOCKER_TAG = "${DOCKER_IMAGE}:0.0.0"
         DOCKER_LATEST = "${DOCKER_IMAGE}:latest"
-        DOCKER_TEST_TAG = "${DOCKER_TAG}-test"
-        DOCKER_LINT_TAG = "${DOCKER_TAG}-lint"
+        DOCKER_TEST_TAG = "${DOCKER_IMAGE}:test"
+        DOCKER_LINT_TAG = "${DOCKER_IMAGE}:lint"
     }
     stages {
         stage('Setup env') {
@@ -27,15 +27,9 @@ pipeline {
         stage('Lint') {
             steps {
                 echo 'Linting the code'
-                sh "docker build --build-arg LINT_REPORT=${LINT_REPORT} -t ${DOCKER_LINT_TAG} --target lint ."
+                sh "docker build --build-arg LINT_REPORT=${LINT_REPORT} -t ${DOCKER_LINT_TAG} -o . --target lint_report ."
 
                 echo 'Get lint results'
-                sh """
-                    docker create --name extract-container ${DOCKER_LINT_TAG}
-                    docker cp extract-container:/app/${LINT_REPORT} .
-                    docker rm extract-container
-                """
-
                 recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
             }
         }
@@ -43,15 +37,9 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 echo 'Running the tests'
-                sh "docker build --build-arg TESTS_REPORT=${TEST_REPORT} -t ${DOCKER_TAG}-test --target test ."
+                sh "docker build --build-arg TESTS_REPORT=${TEST_REPORT} -t ${DOCKER_TEST_TAG} -o . --target test_report ."
 
                 echo 'Get test results'
-                sh """
-                    docker create --name extract-container ${DOCKER_TEST_TAG}
-                    docker cp extract-container:/app/${TEST_REPORT} .
-                    docker rm extract-container
-                """
-
                 junit "${TEST_REPORT}"
             }
         }
@@ -79,6 +67,9 @@ pipeline {
                 echo 'Pushing Docker image to ghcr.io'
                 sh "docker push ${DOCKER_TAG}"
                 sh "docker push ${DOCKER_LATEST}"
+            }
+            when {
+                tag 'v*'
             }
         }
     }

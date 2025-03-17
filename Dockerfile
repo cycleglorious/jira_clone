@@ -16,7 +16,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN npx vitest run > ${TESTS_REPORT} || echo "Testing failed, check report!"
+RUN npx vitest run > ${TESTS_REPORT} || echo "Tests failed, check report!"
+
+FROM scratch AS test_report
+ARG TESTS_REPORT=tests_reports.xml
+COPY --from=test /app/${TESTS_REPORT} .
 
 # Lint
 FROM deps AS lint 
@@ -28,6 +32,10 @@ COPY . .
 
 RUN npx prisma generate
 RUN npm run lint -- --output-file ${LINT_REPORT} --format checkstyle || echo "Linting failed, check report!"
+
+FROM scratch AS lint_report
+ARG LINT_REPORT=lint-report.json
+COPY --from=lint /app/${LINT_REPORT} .
 
 # Build
 FROM deps AS builder
