@@ -32,7 +32,8 @@ pipeline {
                 echo 'Get lint results'
                 sh """
                     docker create --name extract-container ${DOCKER_LINT_TAG}
-                    docker cp extract-container:${LINT_REPORT} .
+                    docker cp extract-container:/app/${LINT_REPORT} .
+                    docker rm extract-container
                 """
 
                 recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
@@ -47,7 +48,8 @@ pipeline {
                 echo 'Get test results'
                 sh """
                     docker create --name extract-container ${DOCKER_TEST_TAG}
-                    docker cp extract-container:${TEST_REPORT} .
+                    docker cp extract-container:/app/${TEST_REPORT} .
+                    docker rm extract-container
                 """
 
                 junit "${TEST_REPORT}"
