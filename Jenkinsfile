@@ -13,6 +13,17 @@ pipeline {
         DOCKER_LINT_TAG = "${DOCKER_TAG}-lint"
     }
     stages {
+        stage('Setup env') {
+            steps {
+                echo 'Create .env with placeholders'
+                writeFile file: '.env', text: """
+                NODE_ENV='production'
+                DATABASE_URL='postgresql://postgres:password@localhost:5432'
+                UPSTASH_REDIS_REST_URL='http://localhost'
+                UPSTASH_REDIS_REST_TOKEN='token'
+                """
+            }
+        }
         stage('Lint') {
             steps {
                 echo 'Linting the code'
