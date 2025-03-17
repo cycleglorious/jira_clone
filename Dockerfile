@@ -1,5 +1,5 @@
 FROM node:22-alpine AS base
-LABEL org.opencontainers.image.source https://github.com/cycleglorious/jira_clone
+LABEL org.opencontainers.image.source=https://github.com/cycleglorious/jira_clone
 
 FROM base AS deps
 
@@ -8,6 +8,28 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm i
 
+# Run tests
+FROM base AS test 
+ARG TESTS_REPORT=tests_reports.xml
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN npx vitest run > ${TESTS_REPORT}
+
+# Lint
+FROM base AS lint 
+ARG LINT_REPORT=lint-report.json
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN npm run lint -- -o=${LINT_REPORT} -f=json
+
+# Build
 FROM base AS builder
 RUN apk add --no-cache openssl
 
