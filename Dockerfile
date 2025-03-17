@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npm run lint -- -o=${LINT_REPORT} -f=json
+RUN npm run lint -- --output-file ${LINT_REPORT} --format checkstyle
 
 # Build
 FROM base AS builder

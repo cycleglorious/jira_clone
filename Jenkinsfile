@@ -28,6 +28,14 @@ pipeline {
             steps {
                 echo 'Linting the code'
                 sh "docker build --build-arg LINT_REPORT=${LINT_REPORT} -t ${DOCKER_LINT_TAG} --target lint ."
+
+                echo 'Get lint results'
+                sh """
+                    docker create --name extract-container ${DOCKER_LINT_TAG}
+                    docker cp extract-container:${LINT_REPORT} .
+                """
+
+                recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
             }
         }
 
