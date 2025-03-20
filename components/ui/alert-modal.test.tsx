@@ -81,6 +81,6 @@ describe('Modal component', () => {
     await userEvent.click(actionButton);
 
     // Ensure that the action handler was called when the action button was clicked
-    expect(onActionClick).toHaveBeenCalledTimes(0);
+    expect(onActionClick).toHaveBeenCalledTimes(1);
   });
 });
