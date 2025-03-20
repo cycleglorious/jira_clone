@@ -30,13 +30,15 @@ pipeline {
             }
             steps {
                 echo 'Linting the code'
-                sh "docker build -t ${DOCKER_LINT_TAG} --target lint --progress=plain . 2> ${LINT_LOGS_FILE}"
+                sh "docker build -t ${DOCKER_LINT_TAG} --target lint --progress=plain . &> ${LINT_LOGS_FILE}"
             }
 
             post {
                 always {
                     echo 'Get lint results'
-                    sh "awk '/<\?xml /,/<\/checkstyle>/ { sub(/^#.*[0-9]\.[0-9]* /, ""); print }' ${LINT_LOGS_FILE} > ${LINT_REPORT}"
+                    sh """
+                    awk '/<?xml /,/<\\/checkstyle>/ { sub(/^#.*[0-9]\\.[0-9]* /, ""); print }' ${LINT_LOGS_FILE} > ${LINT_REPORT}
+                    """
                     recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
                 }
             }
@@ -48,12 +50,14 @@ pipeline {
             }
             steps {
                 echo 'Running the tests'
-                sh "docker build -t ${DOCKER_TEST_TAG} --target test --progress=plain . 2> ${TEST_LOGS_FILE}"
+                sh "docker build -t ${DOCKER_TEST_TAG} --target test --progress=plain . &> ${TEST_LOGS_FILE}"
             }
             post {
                 always {
                     echo 'Get test results'
-                    sh "awk '/<\?xml /,/<\/testsuites>/ { sub(/^#.*[0-9]\.[0-9]* /, ""); print }' ${TEST_LOGS_FILE} > ${TEST_REPORT}"
+                    sh """
+                    awk '/<?xml /,/<\\/testsuites>/ { sub(/^#.*[0-9]\\.[0-9]* /, ""); print }' ${TEST_LOGS_FILE} > ${TEST_REPORT}
+                    """
                     junit "${TEST_REPORT}"
                 }
             }
