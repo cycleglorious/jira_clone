@@ -2,7 +2,6 @@ FROM node:22-alpine AS base
 LABEL org.opencontainers.image.source=https://github.com/cycleglorious/jira_clone
 
 FROM base AS deps
-
 WORKDIR /app
 
 COPY package*.json ./
@@ -10,39 +9,24 @@ RUN npm ci
 
 # Run tests
 FROM deps AS test 
-ARG TESTS_REPORT=tests_reports.xml
-
 WORKDIR /app
-
 COPY . .
 
-RUN npx vitest run > ${TESTS_REPORT} || echo "Tests failed, check report!"
-
-FROM scratch AS test_report
-ARG TESTS_REPORT=tests_reports.xml
-COPY --from=test /app/${TESTS_REPORT} .
+RUN npm run test -- run 
 
 # Lint
 FROM deps AS lint 
-ARG LINT_REPORT=lint-report.json
-
 WORKDIR /app
-
 COPY . .
 
 RUN npx prisma generate
-RUN npm run lint -- --output-file ${LINT_REPORT} --format checkstyle || echo "Linting failed, check report!"
-
-FROM scratch AS lint_report
-ARG LINT_REPORT=lint-report.json
-COPY --from=lint /app/${LINT_REPORT} .
+RUN npm run lint -- --format checkstyle
 
 # Build
 FROM deps AS builder
 RUN apk add --no-cache openssl
 
 WORKDIR /app
-
 COPY . .
 
 RUN npx prisma generate
@@ -55,7 +39,6 @@ WORKDIR /app
 
 ENV NODE_ENV="production"
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_SHARP_PATH=/app/node_modules/sharp
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

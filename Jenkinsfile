@@ -5,7 +5,7 @@ pipeline {
     environment {
         ZIP_NAME = "build-${env.TAG_NAME}.zip"
         TEST_REPORT = 'tests_report.xml'
-        LINT_REPORT = 'lint-report.json'
+        LINT_REPORT = 'lint-report.xml'
         DOCKER_IMAGE = 'ghcr.io/cycleglorious/jira-clone'
         DOCKER_TAG = "${DOCKER_IMAGE}:0.0.0"
         DOCKER_LATEST = "${DOCKER_IMAGE}:latest"
@@ -25,22 +25,37 @@ pipeline {
             }
         }
         stage('Lint') {
+            environment {
+                LINT_LOGS_FILE = "${LINT_REPORT}.log"
+            }
             steps {
                 echo 'Linting the code'
-                sh "docker build --build-arg LINT_REPORT=${LINT_REPORT} -t ${DOCKER_LINT_TAG} -o . --target lint_report ."
+                sh "docker build -t ${DOCKER_LINT_TAG} --target lint --progress=plain . 2> ${LINT_LOGS_FILE}"
+            }
 
-                echo 'Get lint results'
-                recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
+            post {
+                always {
+                    echo 'Get lint results'
+                    sh "awk '/<\?xml /,/<\/checkstyle>/ { sub(/^#.*[0-9]\.[0-9]* /, ""); print }' ${LINT_LOGS_FILE} > ${LINT_REPORT}"
+                    recordIssues(tools: [esLint(pattern: "${LINT_REPORT}")])
+                }
             }
         }
 
         stage('Unit Tests') {
+            environment {
+                TEST_LOGS_FILE = "${TEST_REPORT}.log"
+            }
             steps {
                 echo 'Running the tests'
-                sh "docker build --build-arg TESTS_REPORT=${TEST_REPORT} -t ${DOCKER_TEST_TAG} -o . --target test_report ."
-
-                echo 'Get test results'
-                junit "${TEST_REPORT}"
+                sh "docker build -t ${DOCKER_TEST_TAG} --target test --progress=plain . 2> ${TEST_LOGS_FILE}"
+            }
+            post {
+                always {
+                    echo 'Get test results'
+                    sh "awk '/<\?xml /,/<\/testsuites>/ { sub(/^#.*[0-9]\.[0-9]* /, ""); print }' ${TEST_LOGS_FILE} > ${TEST_REPORT}"
+                    junit "${TEST_REPORT}"
+                }
             }
         }
 
