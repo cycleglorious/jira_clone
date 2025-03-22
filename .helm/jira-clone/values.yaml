@@ -1,0 +1,47 @@
+port: 3000
+
+nameOverride: ""
+fullnameOverride: ""
+
+runMigrations: false
+runSeed: false
+
+container:
+  name: jira-clone
+  image:
+    repository: glocycle/jira-clone
+    pullPolicy: IfNotPresent
+    tag: latest
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+  port: 3000
+  replicas: 2
+
+service:
+  type: ClusterIP
+  port: 3000
+
+configs:
+  nextPublicClerkPublishableKey: pk_test_bHVja3ktbGFtYi03OC5jbGVyay5hY2NvdW50cy5kZXYk
+
+upstash:
+  port: 80
+  token: token-1234
+
+
+postgresql:
+  auth:
+    database: jira-clone
+    username: dbuser
+    password: prisma
+  persistence:
+    size: "1Gi"
+
+global:
+  postgresql:
+    service:
+     ports:
+      postgresql: 5433
+

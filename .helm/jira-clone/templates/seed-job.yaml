@@ -1,0 +1,25 @@
+{{- if .Values.runSeed }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jira-clone.fullname" . }}-seed-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-seeding
+        image: {{ include "jira-clone.image" . }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "jira-clone.fullname" . }}
+          - secretRef:
+              name: {{ include "jira-clone.fullname" . }}
+        env:
+          - name: RUN_SEEDING
+            value: "true"
+          - name: IS_BATCH_MODE
+            value: "true"
+          - name: DATABASE_URL
+            value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)
+      restartPolicy: Never
+{{- end }}

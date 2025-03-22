@@ -31,4 +31,4 @@ spec:
                 name: postgres-db-secrets
           env:
             - name: DATABASE_URL
-              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)?schema=public
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)

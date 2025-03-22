@@ -1,0 +1,33 @@
+port: 80
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+serverlessRedisHttp: 
+  name: serverless-redis-http
+  image: hiett/serverless-redis-http
+  tag: latest
+  resources:
+    limits:
+      memory: "128Mi"
+      cpu: "500m"
+  port: 80
+  configs:
+    srhMode: env
+    srhToken: token
+    redisHostname: localhost
+
+redis:
+  name: redis 
+  image: redis
+  tag: latest
+  resources:
+    limits:
+      memory: "128Mi"
+      cpu: "500m"
+  port: 6379
+  hostname: localhost

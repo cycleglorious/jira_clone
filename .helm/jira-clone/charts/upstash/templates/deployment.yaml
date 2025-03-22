@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "upstash.fullname" . }}
+  labels:
+    {{- include "upstash.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "upstash.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "upstash.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Values.serverlessRedisHttp.name }}
+        image: {{ include "upstash.image" .Values.serverlessRedisHttp }}
+        resources:
+          {{- toYaml .Values.serverlessRedisHttp.resources | nindent 12 }}
+        ports:
+          - containerPort: {{ .Values.serverlessRedisHttp.port }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "upstash.fullname" . }}
+          - secretRef:
+              name: {{ include "upstash.fullname" . }}
+
+      - name: {{ .Values.redis.name }}
+        image: {{ include "upstash.image" .Values.redis }}
+        resources:
+          {{- toYaml .Values.redis.resources | nindent 12 }}
+        ports:
+        - containerPort: {{ .Values.redis.port }}
