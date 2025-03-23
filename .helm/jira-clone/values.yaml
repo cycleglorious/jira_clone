@@ -25,17 +25,18 @@ service:
 
 configs:
   nextPublicClerkPublishableKey: pk_test_bHVja3ktbGFtYi03OC5jbGVyay5hY2NvdW50cy5kZXYk
+  clerkPublishableKey: ""
 
 upstash:
   port: 80
-  token: token-1234
+  token: ""
 
 
 postgresql:
   auth:
     database: jira-clone
     username: dbuser
-    password: prisma
+    password: ""
   persistence:
     size: "1Gi"
 

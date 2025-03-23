@@ -28,10 +28,5 @@ spec:
             - secretRef:
                 name: {{ include "jira-clone.fullname" . }}
           env:
-            - name: UPSTASH_REDIS_REST_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "jira-clone.upstash-fullname" . }}
-                  key: SRH_TOKEN
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)

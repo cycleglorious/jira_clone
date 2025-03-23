@@ -6,7 +6,5 @@ data:
   UPSTASH_REDIS_REST_URL:  {{ include "jira-clone.upstash-url" . }}
   DATABASE_SERVICE: "{{ include "jira-clone.database-fullname" . }}:{{ .Values.global.postgresql.service.ports.postgresql }}"
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: {{ .Values.configs.nextPublicClerkPublishableKey }}
-  CLERK_SECRET_KEY: "sk_test_w3HmNa6NR1nUjG7atZ8a6s71kuwpae9n8EvdQ6V66n"
-  # TODO - use secret sotage here
   POSTGRES_DB: {{ .Values.postgresql.auth.database }}
   POSTGRES_USER: {{ .Values.postgresql.auth.username }}

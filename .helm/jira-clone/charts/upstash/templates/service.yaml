@@ -5,7 +5,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   selector:
-    {{- include "upstash.labels" . | nindent 4 }}
+    {{- include "upstash.selectorLabels" . | nindent 4 }}
   ports:
   - port: {{ .Values.port | default .Values.service.port }} 
     targetPort: {{ .Values.serverlessRedisHttp.port }}
