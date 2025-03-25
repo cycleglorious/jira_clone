@@ -1,7 +1,7 @@
 
 
 {{- define "jira-clone.image" -}}
-"{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"  
+"{{ .Values.container.image.registry }}/{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"  
 {{- end -}}
 
 {{- define "jira-clone.name" -}}
@@ -49,4 +49,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{- define "jira-clone.upstash-url" -}}
 "http://{{ include "jira-clone.upstash-fullname" . }}:{{ .Values.upstash.port }}"
+{{- end -}}
+
+{{- define "jira-clone.dockerconfigjson" -}}
+{{- printf "{\"auths\":{\"%s\":{\"auth\":\"%s\"}}}" .Values.container.image.registry (printf "%s:%s" .Values.container.image.username .Values.container.image.password | b64enc) | b64enc -}}
 {{- end -}}

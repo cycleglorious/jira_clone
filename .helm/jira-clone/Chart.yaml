@@ -33,3 +33,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     tags:
       - database
+  # - name: datadog
+  #   version: ~3.110.3
+  #   repository: https://helm.datadoghq.com 
+  #   tags:
+  #     - datadog

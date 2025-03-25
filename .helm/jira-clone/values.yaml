@@ -9,9 +9,13 @@ runSeed: false
 container:
   name: jira-clone
   image:
-    repository: glocycle/jira-clone
+    username: cycleglorious
+    registry: ghcr.io
+    password: ""
+    repository: cycleglorious/jira-clone
     pullPolicy: IfNotPresent
     tag: latest
+    pullSecret: "jira-clone-ghcr-auth"
   resources:
     limits:
       memory: "512Mi"
@@ -46,3 +50,24 @@ global:
      ports:
       postgresql: 5433
 
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  apiKey: ""
+  site: "datadoghq.eu"
+  logs:
+    enabled: true
+    containerCollectAll: true
+  serviceMonitoring:
+    enabled: true
+  networkMonitoring:
+    enabled: true
+  kubelet:
+    tlsVerify: false 
+  processAgent:
+    enabled: true
+  orchestratorExplorer:
+    enabled: true
+
+controller:
+  publishService:
+    enabled: true
