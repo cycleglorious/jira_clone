@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         {{- include "jira-clone.selectorLabels" . | nindent 8 }}
+        admission.datadoghq.com/enabled: "true"
     spec:
       imagePullSecrets:
         - name: {{ .Values.container.image.pullSecret }}
@@ -32,3 +33,6 @@ spec:
           env:
             - name: DATABASE_URL
               value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)
+            - name: DD_LOGS_INJECTION
+              value: "true"
+

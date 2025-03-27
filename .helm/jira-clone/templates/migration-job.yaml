@@ -6,6 +6,8 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.container.image.pullSecret }}
       containers:
       - name: {{ .Chart.Name }}-migration
         image: {{ include "jira-clone.image" . }}

@@ -50,6 +50,7 @@ global:
      ports:
       postgresql: 5433
 
+targetSystem: "linux"
 datadog:
   apiKeyExistingSecret: datadog-secret
   apiKey: ""
@@ -65,6 +66,7 @@ datadog:
     tlsVerify: false 
   processAgent:
     enabled: true
+    processCollection: true
   orchestratorExplorer:
     enabled: true
 
