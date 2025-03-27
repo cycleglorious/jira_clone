@@ -7,8 +7,6 @@ pipeline {
         TEST_REPORT = 'tests_report.xml'
         LINT_REPORT = 'lint-report.xml'
         DOCKER_IMAGE = 'ghcr.io/cycleglorious/jira-clone'
-        DOCKER_TAG = "${env.TAG_NAME.replaceFirst(/^v/, '')}"
-        DOCKER_IMAGE_TAG = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         DOCKER_LATEST = "${DOCKER_IMAGE}:latest"
         DOCKER_TEST_TAG = "${DOCKER_IMAGE}:test"
         DOCKER_LINT_TAG = "${DOCKER_IMAGE}:lint"
@@ -23,6 +21,18 @@ pipeline {
                 UPSTASH_REDIS_REST_URL='http://localhost'
                 UPSTASH_REDIS_REST_TOKEN='token'
                 """
+                echo 'Set DOCKER_TAG'
+                script {
+                    if (env.TAG_NAME) {
+                        env.DOCKER_TAG = env.TAG_NAME.startsWith('v') ? env.TAG_NAME.substring(1) : env.TAG_NAME
+                        echo "Triggered by tag: ${env.TAG_NAME}, using DOCKER_TAG: ${DOCKER_TAG}"
+                    } else {
+                        echo 'Pipeline not triggered by a tag. Skipping DOCKER_TAG setup.'
+                        env.DOCKER_TAG = 'none'
+                    }
+                    env.DOCKER_IMAGE_TAG = "${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                }
+                echo "DOCKER_TAG: ${DOCKER_TAG}; DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG}"
             }
         }
         stage('Lint') {
@@ -93,7 +103,7 @@ pipeline {
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to ghcr.io'
-                sh "docker push ${DOCKER_TAG}"
+                sh "docker push ${DOCKER_IMAGE_TAG}"
                 sh "docker push ${DOCKER_LATEST}"
             }
             when {
