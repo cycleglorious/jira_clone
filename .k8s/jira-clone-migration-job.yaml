@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jira-clone-migration-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: jira-clone-migration
+        image: glocycle/jira-clone:latest
+        envFrom:
+          - configMapRef:
+              name: jira-clone-configs
+          - secretRef:
+              name: postgres-db-secrets
+        env:
+          - name: RUN_MIGRATIONS
+            value: "true"
+          - name: IS_BATCH_MODE
+            value: "true"
+          - name: DATABASE_URL
+            value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DATABASE_SERVICE)/$(POSTGRES_DB)?shema=public
+      restartPolicy: Never
+

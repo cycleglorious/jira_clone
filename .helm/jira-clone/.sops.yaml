@@ -1,0 +1,4 @@
+creation_rules:
+  - path: secrets.values.yaml
+    age: age1ezu4feuh5qfx7evh073c2f3uegg94aguw039usg0eyfpp287qqsqw32rve
+

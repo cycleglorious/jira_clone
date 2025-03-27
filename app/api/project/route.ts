@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { type Project } from "@prisma/client";
-
+export const dynamic = 'force-dynamic'
 export type GetProjectResponse = {
   project: Project | null;
 };

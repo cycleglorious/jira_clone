@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upstash-redis
+  labels:
+    app: upstash-redis
+spec:
+  selector:
+    matchLabels:
+      app: upstash-redis
+  template:
+    metadata:
+      labels:
+        app: upstash-redis
+    spec:
+      containers:
+      - name: upstash-redis
+        image: hiett/serverless-redis-http:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 80
+        env:
+          - name: SRH_MODE
+            value: env
+          - name: SRH_TOKEN
+            value: token
+          - name: SRH_CONNECTION_STRING
+            value: redis://localhost:6379
+      - name: redis
+        image: redis
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379

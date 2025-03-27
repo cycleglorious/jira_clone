@@ -1,0 +1,102 @@
+services:
+  postgres-db:
+    image: postgres:15
+    hostname: postgres-db
+    container_name: postgres-db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: prisma
+    ports:
+      - '5432:5432'
+    networks:
+      - prisma-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+  app:
+    image: jira-clone:latest
+    ports:
+      - ":3000"
+    env_file:
+      - .env
+    networks:
+      - prisma-network
+      - upstash-network
+      - app-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      serverless-redis-http:
+        condition: service_started
+    deploy:
+      replicas: 2
+
+  proxy:
+    image: nginx:latest
+    container_name: nginx_lb
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      app:
+        condition: service_started
+
+  migration:
+    image: jira-clone:latest
+    env_file:
+      - .env
+    environment:
+      # RUN_MIGRATIONS: "true"
+      RUN_SEEDING: "true"
+    networks:
+      - prisma-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    volumes:
+      - "./prisma:/prisma:ro"
+      - "./make-migration.sh:/make-migration.sh:ro"
+    
+
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: token
+      SRH_CONNECTION_STRING: "redis://redis:6379"
+    restart: always
+    networks:
+      - upstash-network
+      - redis-network
+    depends_on:
+      redis:
+        condition: service_started
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - redis-network
+
+networks:
+  prisma-network:
+    name: prisma-network
+  upstash-network:
+    name: upstash-network
+  redis-network:
+    name: redis-network
+  app-network:
+    name: app-network
+
+volumes:
+  postgres_data:
