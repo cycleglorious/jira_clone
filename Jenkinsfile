@@ -7,7 +7,8 @@ pipeline {
         TEST_REPORT = 'tests_report.xml'
         LINT_REPORT = 'lint-report.xml'
         DOCKER_IMAGE = 'ghcr.io/cycleglorious/jira-clone'
-        DOCKER_TAG = "${DOCKER_IMAGE}:0.0.0"
+        DOCKER_TAG = "${env.TAG_NAME.replaceFirst(/^v/, '')}"
+        DOCKER_IMAGE_TAG = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         DOCKER_LATEST = "${DOCKER_IMAGE}:latest"
         DOCKER_TEST_TAG = "${DOCKER_IMAGE}:test"
         DOCKER_LINT_TAG = "${DOCKER_IMAGE}:lint"
@@ -74,12 +75,18 @@ pipeline {
                     }
                 }
             }
+            when {
+                tag 'v*'
+            }
         }
 
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image'
-                sh "docker build -t ${DOCKER_TAG} -t ${DOCKER_LATEST} ."
+                sh "docker build -t ${DOCKER_IMAGE_TAG} -t ${DOCKER_LATEST} ."
+            }
+            when {
+                tag 'v*'
             }
         }
 
