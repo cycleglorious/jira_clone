@@ -26,13 +26,12 @@ pipeline {
                     if (env.TAG_NAME) {
                         env.DOCKER_TAG = env.TAG_NAME.startsWith('v') ? env.TAG_NAME.substring(1) : env.TAG_NAME
                         echo "Triggered by tag: ${env.TAG_NAME}, using DOCKER_TAG: ${DOCKER_TAG}"
+                        env.DOCKER_IMAGE_TAG = "${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                        echo "DOCKER_TAG: ${DOCKER_TAG}; DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG}"
                     } else {
                         echo 'Pipeline not triggered by a tag. Skipping DOCKER_TAG setup.'
-                        env.DOCKER_TAG = 'none'
                     }
-                    env.DOCKER_IMAGE_TAG = "${DOCKER_IMAGE}:${env.DOCKER_TAG}"
                 }
-                echo "DOCKER_TAG: ${DOCKER_TAG}; DOCKER_IMAGE_TAG: ${DOCKER_IMAGE_TAG}"
             }
         }
         stage('Lint') {
