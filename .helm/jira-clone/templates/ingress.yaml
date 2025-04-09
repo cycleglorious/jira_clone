@@ -4,7 +4,12 @@ metadata:
   name: {{ include "jira-clone.fullname" . }}
   labels:
     {{- include "jira-clone.labels" . | nindent 4 }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
 spec:
+  ingressClassName: alb
   rules:
   - http:
       paths:
@@ -15,3 +20,26 @@ spec:
             name: {{ include "jira-clone.fullname" . }}
             port: 
               number: {{ .Values.service.port }}
+
+---
+# # Supported annotations
+# # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.7/guide/ingress/annotations/
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: myapp
+#   namespace: 6-example
+
+# spec:
+#   ingressClassName: alb
+#   rules:
+#     - host: ex6.antonputra.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: myapp
+#                 port:
+#                   number: 8080

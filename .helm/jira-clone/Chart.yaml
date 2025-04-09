@@ -28,13 +28,8 @@ dependencies:
     repository: file://charts/upstash
     tags:
       - upstash
-  - name: postgresql
-    version: 16.5.3
-    repository: https://charts.bitnami.com/bitnami
-    tags:
-      - database
-  # - name: datadog
-  #   version: ~3.110.3
-  #   repository: https://helm.datadoghq.com 
+  # - name: postgresql
+  #   version: 16.5.3
+  #   repository: https://charts.bitnami.com/bitnami
   #   tags:
-  #     - datadog
+  #     - database

@@ -15,11 +15,11 @@ spec:
         {{- include "jira-clone.selectorLabels" . | nindent 8 }}
         admission.datadoghq.com/enabled: "true"
     spec:
-      imagePullSecrets:
-        - name: {{ .Values.container.image.pullSecret }}
+      # imagePullSecrets:
+      #   - name: {{ .Values.container.image.pullSecret }}
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ include "jira-clone.image" . }}
+          image: public.ecr.aws/l4l1v8r7/app/jira-clone:latest
           imagePullPolicy: {{ .Values.container.image.pullPolicy }}
           resources:
             {{- toYaml .Values.container.resources | nindent 12 }}

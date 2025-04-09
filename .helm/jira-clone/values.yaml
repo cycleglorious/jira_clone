@@ -10,9 +10,9 @@ container:
   name: jira-clone
   image:
     username: cycleglorious
-    registry: ghcr.io
+    registry: ""
     password: ""
-    repository: cycleglorious/jira-clone
+    repository: public.ecr.aws/l4l1v8r7/app/jira-clone:latest
     pullPolicy: IfNotPresent
     tag: latest
     pullSecret: "jira-clone-ghcr-auth"
@@ -21,7 +21,7 @@ container:
       memory: "512Mi"
       cpu: "1000m"
   port: 3000
-  replicas: 2
+  replicas: 1
 
 service:
   type: ClusterIP
@@ -30,6 +30,7 @@ service:
 configs:
   nextPublicClerkPublishableKey: pk_test_bHVja3ktbGFtYi03OC5jbGVyay5hY2NvdW50cy5kZXYk
   clerkPublishableKey: ""
+  upstashRedisRestUrl: https://sound-elf-50165.upstash.io
 
 upstash:
   port: 80
@@ -41,18 +42,17 @@ postgresql:
     database: jira-clone
     username: dbuser
     password: ""
-  persistence:
-    size: "1Gi"
+  dbHost: ""
+  dbPort: 5432
 
 global:
   postgresql:
     service:
      ports:
-      postgresql: 5433
+      postgresql: 5432
 
 targetSystem: "linux"
 datadog:
-  apiKeyExistingSecret: datadog-secret
   apiKey: ""
   site: "datadoghq.eu"
   logs:
