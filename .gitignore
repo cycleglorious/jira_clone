@@ -49,3 +49,4 @@ config.load
 .terraform/
 .terraform.*
 *.pub
+vault.sh

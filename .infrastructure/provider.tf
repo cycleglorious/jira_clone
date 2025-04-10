@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.17.0"
+    }
   }
 
   required_version = ">= 1.2.0"
@@ -14,25 +18,34 @@ provider "aws" {
   shared_config_files = ["~/.aws/credentials"]
 }
 
-data "aws_eks_cluster" "eks" {
-  name = aws_eks_cluster.eks.name
-}
-
-data "aws_eks_cluster_auth" "eks" {
-  name = aws_eks_cluster.eks.name
-}
 
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks.token
+    host                   = aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.eks.certificate_authority[0].data)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+      command     = "aws"
+    }
   }
 }
 
+
+# provider "kubernetes" {
+#   host                   = module.eks.cluster_endpoint
+#   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     command     = "aws"
+#     args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+#   }
+# }
+
+
 provider "vault" {
   address = "http://127.0.0.1:8200"
-  token = var.vault_token
+  token   = var.vault_token
 }
 
 data "vault_generic_secret" "database" {

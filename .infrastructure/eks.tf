@@ -23,15 +23,14 @@ resource "aws_iam_role_policy_attachment" "eks" {
 }
 
 resource "aws_eks_cluster" "eks" {
-  name     = "jira-clone-eks"
-  version  = 1.32
+  name     = var.cluster_name
+  version  = var.cluster_version
   role_arn = aws_iam_role.eks.arn
 
   vpc_config {
-    subnet_ids = [aws_subnet.jira-clone-private[0].id, aws_subnet.jira-clone-private[1].id]
-
+    subnet_ids = module.vpc.private_subnets
     endpoint_public_access  = true
-    endpoint_private_access = false
+    endpoint_private_access = true
   }
 
   access_config {
@@ -60,7 +59,6 @@ resource "aws_eks_addon" "vpc_cni" {
   resolve_conflicts_on_create = "OVERWRITE" 
   resolve_conflicts_on_update = "OVERWRITE" 
 
-  # Переконатись, що кластер існує
   depends_on = [ aws_eks_cluster.eks ] 
 
   tags = { Name = "${aws_eks_cluster.eks.name}-vpc-cni" }
@@ -68,7 +66,7 @@ resource "aws_eks_addon" "vpc_cni" {
 
 resource "aws_eks_addon" "kube_proxy" {
   cluster_name = aws_eks_cluster.eks.name
-  addon_name   = "kube-proxy" # Мережевий проксі Kubernetes
+  addon_name   = "kube-proxy"
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 

@@ -36,15 +36,15 @@ resource "aws_eks_node_group" "jira-clone" {
   cluster_name = aws_eks_cluster.eks.name
   version = 1.32
 
-  node_group_name = "jira-clone"
+  node_group_name = local.app_name
   node_role_arn = aws_iam_role.nodes.arn
 
-  subnet_ids = [aws_subnet.jira-clone-private[0].id, aws_subnet.jira-clone-private[1].id]
-  capacity_type = "ON_DEMAND"
+  subnet_ids = module.vpc.private_subnets
+  capacity_type = "SPOT"
   instance_types = ["t3.medium"]
 
   scaling_config {
-    desired_size = 1
+    desired_size = 2
     max_size = 2
     min_size = 0
   }

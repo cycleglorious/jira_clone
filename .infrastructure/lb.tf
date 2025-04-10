@@ -62,7 +62,7 @@ resource "helm_release" "aws_lbc" {
 
   set {
     name  = "vpcId"
-    value = aws_vpc.jira-clone.id
+    value = module.vpc.vpc_id
   }
 
   set {
