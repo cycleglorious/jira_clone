@@ -66,8 +66,11 @@ jobs:
           role-to-assume: arn:aws:iam::792642165337:role/GitHubAction-AssumeRoleWithAction
           aws-region: eu-north-1
 
-
       - name: Run CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
           project-name: jira-clone
+          env-vars-for-codebuild: |
+            GIT_TAG
+        env:
+          GIT_TAG: ${{ github.ref_name }}
