@@ -1,5 +1,12 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION: "eu-north-1"
+    AWS_ACCOUNT_ID: "792642165337"
+    IMAGE_REPO_NAME: "jira-clone"
+    IMAGE_TAG: "latest"
+
 phases:
   pre_build:
     commands:
