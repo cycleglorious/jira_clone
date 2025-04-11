@@ -7,13 +7,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Run tests
-FROM deps AS test 
-WORKDIR /app
-COPY . .
-
-RUN npm run test -- run 
-
 # Lint
 FROM deps AS lint 
 WORKDIR /app
@@ -21,6 +14,14 @@ COPY . .
 
 RUN npx prisma generate
 RUN npm run lint -- --format checkstyle
+
+# Run tests
+FROM deps AS test 
+WORKDIR /app
+COPY . .
+
+RUN npm run test -- run 
+
 
 # Build
 FROM deps AS builder
