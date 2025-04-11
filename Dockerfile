@@ -13,7 +13,7 @@ WORKDIR /app
 COPY . .
 
 RUN npx prisma generate
-RUN npm run lint -- --format checkstyle
+RUN npm run lint
 
 # Run tests
 FROM deps AS test 
