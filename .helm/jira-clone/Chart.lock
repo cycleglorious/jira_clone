@@ -2,8 +2,5 @@ dependencies:
 - name: upstash
   repository: file://charts/upstash
   version: 0.1.0
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.5.3
-digest: sha256:e10143f3e7c8d2a8050a2c561769f25878d80f8bd0f6f3440dfae0987c32e557
-generated: "2025-03-25T15:41:32.665610097Z"
+digest: sha256:c04155b5c877ceca0829d1a9645202acfede8980669b42dfa261031b37c9c07a
+generated: "2025-04-06T20:20:26.474401302Z"

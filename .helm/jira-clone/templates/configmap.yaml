@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: {{ include "jira-clone.fullname" . }}
 data:
-  UPSTASH_REDIS_REST_URL:  {{ include "jira-clone.upstash-url" . }}
-  DATABASE_SERVICE: "{{ include "jira-clone.database-fullname" . }}:{{ .Values.global.postgresql.service.ports.postgresql }}"
+  UPSTASH_REDIS_REST_URL:  {{ .Values.configs.upstashRedisRestUrl }}
+  DATABASE_SERVICE: {{ .Values.postgresql.dbHost }}
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: {{ .Values.configs.nextPublicClerkPublishableKey }}
   POSTGRES_DB: {{ .Values.postgresql.auth.database }}
   POSTGRES_USER: {{ .Values.postgresql.auth.username }}

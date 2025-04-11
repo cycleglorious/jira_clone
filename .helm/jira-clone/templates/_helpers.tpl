@@ -1,7 +1,7 @@
 
 
 {{- define "jira-clone.image" -}}
-"{{ .Values.container.image.registry }}/{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"  
+"{{ .Values.container.image.registry }}{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"  
 {{- end -}}
 
 {{- define "jira-clone.name" -}}
@@ -39,9 +39,9 @@ app.kubernetes.io/name: {{ include "jira-clone.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "jira-clone.database-fullname" -}}
-{{ include "jira-clone.fullname" .Subcharts.postgresql }}
-{{- end -}}
+# {{- define "jira-clone.database-fullname" -}}
+# {{ include "jira-clone.fullname" .Subcharts.postgresql }}
+# {{- end -}}
 
 {{- define "jira-clone.upstash-fullname" -}}
 {{ include "jira-clone.fullname" .Subcharts.upstash }}

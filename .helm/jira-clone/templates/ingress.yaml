@@ -4,7 +4,12 @@ metadata:
   name: {{ include "jira-clone.fullname" . }}
   labels:
     {{- include "jira-clone.labels" . | nindent 4 }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
 spec:
+  ingressClassName: alb
   rules:
   - http:
       paths:
