@@ -16,10 +16,9 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo "Git tag from GitHub Actions: $GIT_TAG"
       - export IMAGE_TAG=$(echo $GIT_TAG | sed 's/^v//')
-      - echo "Using Docker image tag: $IMAGE_TAG"
       - export IMAGE_TAG_LATEST="latest"
+      - echo $IMAGE_TAG
       - export ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
       - echo "Creating dummy .env for linting..."
       - echo "NODE_ENV='development'" > .env
