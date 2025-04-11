@@ -1,33 +1,18 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_ACCOUNT_ID: "792642165337"
-    AWS_DEFAULT_REGION: "eu-north-1"
-    ECR_REPOSITORY_NAME: "jira-clone"
-  exported-variables:
-    - IMAGE_TAG
-    - IMAGE_TAG_LATEST
-
 phases:
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
+      - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - export IMAGE_TAG=$(echo v0.0.1 | sed 's/^v//')
-      - echo "Using Docker image tag: $IMAGE_TAG"
-      - export IMAGE_TAG_LATEST="latest"
-      - export ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
-
   build:
     commands:
-      - echo "Building Docker image..."
-      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:$IMAGE_TAG_LATEST .
-      - echo "Build completed."
-
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
   post_build:
     commands:
-      - echo "Pushing Docker images to ECR..."
-      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
-      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG_LATEST
-      - echo "Docker images pushed successfully."
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
