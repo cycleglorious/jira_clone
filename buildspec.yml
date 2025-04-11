@@ -5,19 +5,36 @@ env:
     AWS_DEFAULT_REGION: "eu-north-1"
     AWS_ACCOUNT_ID: "792642165337"
     IMAGE_REPO_NAME: "jira-clone"
-    IMAGE_TAG: "latest"
+    GIT_TAG: "v0.0.0-test"
+  exported-variables:
+    - IMAGE_TAG
+    - IMAGE_TAG_LATEST
+
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo "Git tag from GitHub Actions: $GIT_TAG"
+      - export IMAGE_TAG=$(echo $GIT_TAG | sed 's/^v//')
+      - echo "Using Docker image tag: $IMAGE_TAG"
+      - export IMAGE_TAG_LATEST="latest"
+      - export ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
+      - echo "Creating dummy .env for linting..."
+      - echo "NODE_ENV='development'" > .env
+      - echo "DATABASE_URL='postgresql://user:pass@host:5432/db'" >> .env
+      - echo "UPSTASH_REDIS_REST_URL='dummy'" >> .env
+      - echo "UPSTASH_REDIS_REST_TOKEN='dummy'" >> .env
+
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG   
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG_LATEST      
+
   post_build:
     commands:
       - echo Build completed on `date`
