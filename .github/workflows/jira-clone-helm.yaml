@@ -58,3 +58,8 @@ jobs:
           REPOSITORY: jira-clone
         run: |
           helm push $REPOSITORY-0.1.0.tgz oci://$REGISTRY
+      
+      - name: Run CodeBuild
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: JiraCloneDeployHelmCharts

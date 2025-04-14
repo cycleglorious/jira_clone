@@ -12,7 +12,7 @@ container:
     username: cycleglorious
     registry: ""
     password: ""
-    repository: public.ecr.aws/l4l1v8r7/app/jira-clone
+    repository: 792642165337.dkr.ecr.eu-north-1.amazonaws.com/jira-clone
     pullPolicy: IfNotPresent
     tag: latest
     pullSecret: "jira-clone-ghcr-auth"
