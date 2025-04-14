@@ -1,0 +1,57 @@
+name: Update Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - ".helm/jira-clone/**"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    name: Build and Push Helm Chart
+    env:
+      ECR_REPO: oci://792642165337.dkr.ecr.eu-north-1.amazonaws.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: v3.13.0
+
+      - name: Extract Chart Name
+        id: chart_name
+        run: |
+          NAME=$(grep '^name:' .helm/jira-clone/Chart.yaml | awk '{print $2}')
+          echo "chart_name=$NAME" >> $GITHUB_OUTPUT
+
+      - name: Extract Chart Version
+        id: chart_version
+        run: |
+          VERSION=$(grep '^version:' .helm/jira-clone/Chart.yaml | awk '{print $2}')
+          echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Package Helm Chart
+        run: helm package .helm/jira-clone
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::792642165337:role/GitHubAction-AssumeRoleWithAction
+          aws-region: eu-north-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Package and push helm chart to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: jira-clone-chart
+        run: |
+          helm package $REPOSITORY
+          helm push $REPOSITORY-0.1.0.tgz oci://$REGISTRY
