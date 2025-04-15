@@ -14,9 +14,9 @@ spec:
       labels:
         {{- include "jira-clone.selectorLabels" . | nindent 8 }}
         admission.datadoghq.com/enabled: "true"
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
     spec:
-      # imagePullSecrets:
-      #   - name: {{ .Values.container.image.pullSecret }}
       containers:
         - name: {{ .Chart.Name }}
           image: public.ecr.aws/l4l1v8r7/app/jira-clone:latest
