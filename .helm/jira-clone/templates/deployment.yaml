@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: public.ecr.aws/l4l1v8r7/app/jira-clone:latest
+          image: {{ include "jira-clone.image" . }}
           imagePullPolicy: {{ .Values.container.image.pullPolicy }}
           resources:
             {{- toYaml .Values.container.resources | nindent 12 }}
