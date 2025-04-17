@@ -10,5 +10,7 @@ export const useIsAuthenticated = (): [string | undefined, () => void] => {
     setAuthModalIsOpen(true);
   }
 
+  console.log(user);
+
   return [user?.id, openAuthModal];
 };
