@@ -10,7 +10,6 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /project/backlog
     alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.elbCertArn }}"
 spec:
   ingressClassName: alb
   rules:
