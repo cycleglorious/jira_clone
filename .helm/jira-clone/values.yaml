@@ -14,7 +14,7 @@ container:
     password: ""
     repository: 792642165337.dkr.ecr.eu-north-1.amazonaws.com/jira-clone
     pullPolicy: IfNotPresent
-    tag: 0.0.18
+    tag: 0.0.19
     pullSecret: "jira-clone-ghcr-auth"
   resources:
     limits:
