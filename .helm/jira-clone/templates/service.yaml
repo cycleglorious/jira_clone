@@ -11,3 +11,4 @@ spec:
     port: {{ .Values.port | default .Values.service.port }}
     targetPort: {{ .Values.container.port }}
     protocol: TCP
+  sessionAffinity: ClientIP
