@@ -5,6 +5,7 @@ fullnameOverride: ""
 
 runMigrations: false
 runSeed: false
+elbCertArn: ""
 
 container:
   name: jira-clone
