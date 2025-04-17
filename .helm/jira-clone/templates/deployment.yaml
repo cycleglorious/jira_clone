@@ -13,9 +13,6 @@ spec:
     metadata:
       labels:
         {{- include "jira-clone.selectorLabels" . | nindent 8 }}
-        admission.datadoghq.com/enabled: "true"
-      annotations:
-        instrumentation.opentelemetry.io/inject-nodejs: "true"
     spec:
       containers:
         - name: {{ .Chart.Name }}
