@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs/app-beta";
 import { type Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import "@/styles/globals.css";
@@ -45,7 +44,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     <html lang="en">
       <head />
       <body>
-        <ClerkProvider>
           <QueryProvider>
             <AuthModalProvider>
               <AuthModal />
@@ -60,7 +58,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
               {children}
             </AuthModalProvider>
           </QueryProvider>
-        </ClerkProvider>
       </body>
     </html>
   );
