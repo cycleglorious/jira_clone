@@ -5,12 +5,6 @@ locals {
   app_name = "jira-clone"
 }
 
-variable "vault_token" {
-  type        = string
-  description = "Value of vault token"
-  sensitive   = true
-}
-
 variable "region" {
   type        = string
   default     = "eu-north-1"
@@ -50,6 +44,12 @@ variable "db_instance_type" {
   default     = "db.t4g.micro"
 }
 
+variable "db_username" {
+  description = "Database admin username"
+  type        = string
+  default     = "jiradbadmin"
+}
+
 variable "db_family" {
   type        = string
   description = "DB Family"
@@ -70,9 +70,9 @@ variable "db_port" {
 }
 
 variable "db_engine_version" {
-  type = string
+  type        = string
   description = "DB Engine version"
-  default = "15.12"
+  default     = "15.12"
 }
 
 # ===== App =====
@@ -82,16 +82,22 @@ variable "upstash_url" {
   default     = "http://serverless-redis-http"
 }
 
+variable "next_public_clerk_publishable_key" {
+  type = string
+  description = "Clerk publishable key"
+  default = "pk_test_bHVja3ktbGFtYi03OC5jbGVyay5hY2NvdW50cy5kZXYk"
+}
+
 variable "run_migrations" {
-  type = bool
+  type        = bool
   description = "Run migrations"
-  default = false
+  default     = false
 }
 
 variable "run_seed" {
-  type = bool
+  type        = bool
   description = "Run seeds"
-  default = false
+  default     = false
 }
 
 # ===== EKS =====
@@ -106,3 +112,39 @@ variable "cluster_version" {
   type        = string
   default     = "1.32"
 }
+
+# ===== CODEBUILD APP DEPLOY =====
+variable "codebuild_app_deploy_name" {
+  type        = string
+  description = "Codebuild project name"
+  default     = "JiraCloneDeploy"
+}
+
+# ===== CODEBUILD ELB CONTROLLERS DEPLOY =====
+variable "codebuild_eln_controllers_deploy_name" {
+  type        = string
+  description = "Codebuild project name"
+  default     = "ElnControllersDeploy"
+}
+
+# ===== SECRETS =====
+variable "secret_name" {
+  type = string
+  description = "Name of the secret"
+  default = "jira-clone-credentials"
+}
+
+variable "upstash_api_token" {
+  type = string
+  description = "Upstash API token"
+  sensitive = true
+  default = null
+}
+
+variable "clerk_secret_key" {
+  type = string
+  description = "Clerk secret key"
+  sensitive = true
+  default = null
+}
+

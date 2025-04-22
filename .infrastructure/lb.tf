@@ -32,7 +32,7 @@ resource "aws_iam_role_policy_attachment" "jira-clone-lb" {
 
 
 resource "aws_eks_pod_identity_association" "jira-clone-lb" {
-  cluster_name    = aws_eks_cluster.eks.name
+  cluster_name    = module.eks_jira_clone.cluster_name
   role_arn        = aws_iam_role.jira-clone-lb.arn
   service_account = "aws-load-balancer-controller"
   namespace       = "kube-system"
@@ -40,33 +40,4 @@ resource "aws_eks_pod_identity_association" "jira-clone-lb" {
   depends_on = [
     aws_iam_role_policy_attachment.jira-clone-lb
   ]
-}
-
-resource "helm_release" "aws_lbc" {
-  name = "aws-load-balancer-controller"
-
-  repository = "https://aws.github.io/eks-charts"
-  chart      = "aws-load-balancer-controller"
-  namespace  = "kube-system"
-  version    = "1.7.2"
-
-  set {
-    name  = "clusterName"
-    value = aws_eks_cluster.eks.name
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = "aws-load-balancer-controller"
-  }
-
-  set {
-    name  = "vpcId"
-    value = module.vpc.vpc_id
-  }
-
-  set {
-    name  = "region"
-    value = var.region
-  }
 }
