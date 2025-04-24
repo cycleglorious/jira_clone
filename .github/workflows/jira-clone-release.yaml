@@ -57,6 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ZIP_NAME: build-${{ github.ref_name }}.zip
+      S3_BUCKET_NAME: jira-clone-deployment-dev
+      BEANSTALK_APP_NAME: jira-clone
+      BEANSTALK_ENV_NAME: jira-clone-dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,7 +88,32 @@ jobs:
         run: |
           cd dist
           zip -r ../${{ env.ZIP_NAME }} .
+          cd ..
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::792642165337:role/GitHubAction-AssumeRoleWithAction
+          aws-region: eu-north-1
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp ${{ env.ZIP_NAME }} s3://${{ env.S3_BUCKET_NAME }} /${{ env.ZIP_NAME }}
+
+      - name: Create Beanstalk Application Version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ env.BEANSTALK_APP_NAME }}" \
+            --version-label "${{ github.ref_name }}" \
+            --description "Commit ${{ github.sha }}" \
+            --source-bundle S3Bucket="${{ env.S3_BUCKET_NAME }}",S3Key="${{ env.ZIP_NAME }}"
+      
+      - name: Deploy to Beanstalk Environment
+        run: |
+          aws elasticbeanstalk update-environment \
+            --application-name "${{ env.BEANSTALK_APP_NAME }}" \
+            --environment-name "${{ env.BEANSTALK_ENV_NAME }}" \
+            --version-label "${{ github.ref_name }}"
 
       - name: "Upload build artifact"
         uses: actions/upload-artifact@v4
