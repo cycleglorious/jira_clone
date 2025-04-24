@@ -82,7 +82,10 @@ jobs:
           docker rm $IMAGE_ID
 
       - name: Zip the build folder
-        run: zip -r ${{ env.ZIP_NAME }} dist
+        run: |
+          cd dist
+          zip -r ../${{ env.ZIP_NAME }} .
+
 
       - name: "Upload build artifact"
         uses: actions/upload-artifact@v4
